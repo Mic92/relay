@@ -3,7 +3,7 @@
 # Merge the source files according to info in "stripped-log.txt"
 
 CURROOT=$PWD
-RELAYROOT=/home/jan/research/relay-race
+RELAYROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 CILLYROOT=$RELAYROOT/cil/bin
 DUPPYROOT=$RELAYROOT/scripts
 LOG=dumplog

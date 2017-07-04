@@ -3,7 +3,7 @@
 # Replay commands from "stripped-log.txt" but run through "cilly --dologcalls"
 
 CURROOT=$PWD
-RELAYROOT=/home/jan/research/relay-race
+RELAYROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 CILLYROOT=$RELAYROOT/cil/bin
 
 #gcc-log has "cd" and "duppy" commands on each line

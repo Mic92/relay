@@ -3,7 +3,7 @@
 # Intercepts GCC calls from a makefile -- remember to change LOCKROOT
 # Example usage: "intercept.sh make -e"
 
-LOCKROOT=/home/jan/research/relay-race
+LOCKROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
 CC=$LOCKROOT/scripts/mycc.pl
 GCC=$LOCKROOT/scripts/mycc.pl

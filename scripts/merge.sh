@@ -6,7 +6,7 @@
 
 CURROOT=$PWD
 DUMPROOT=$PWD/cilmerged
-RELAYROOT=/home/jan/research/relay-race
+RELAYROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 CILLYROOT=$RELAYROOT/cil/bin
 MERGYROOT=$RELAYROOT/scripts
 LOG=$DUMPROOT/log.txt
