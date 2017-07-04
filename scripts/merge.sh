@@ -17,9 +17,9 @@ LOG=$DUMPROOT/log.txt
 #will interpret "duppy" as "mergy" later...
 CMDS=$PWD/gcc-log.txt
 
-/bin/rm -rf $DUMPROOT
+rm -rf $DUMPROOT
 mkdir -p $DUMPROOT
-/bin/rm -f $LOG
+rm -f $LOG
 
 export CURROOT
 export DUMPROOT
