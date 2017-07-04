@@ -17,7 +17,7 @@ tempdir=/tmp/
 
 #reserve a file to store checkpoint / status information
 function reserveCheck {
-    statusFile=`tempfile -d $tempdir -p temp.status`
+    statusFile=`mktemp $tempdir/temp.status.XXXXX`
     echo "reserved status file: $statusFile"
 }
 

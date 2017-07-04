@@ -79,8 +79,7 @@ let printPriority = ref false
 let tmpFile dir prefix =
   let result = ref "" in
   let in_chan = 
-    Unix.open_process_in ("tempfile -d " ^ dir ^ 
-                            " -p " ^ prefix ^ " -m 0600") in
+    Unix.open_process_in ("mktemp " ^ dir ^ "/" ^ prefix ^ ".XXXXX") in
   result := input_line in_chan;
   match Unix.close_process_in in_chan with
     Unix.WEXITED i when i == 0 ->

@@ -13,7 +13,7 @@ def printUsage():
 
 #reserve a file to store checkpoint / status information
 def reserveCheck (tempdir):
-    statusFile= commands.getoutput("tempfile -d %s -p temp.status" % tempdir)
+    statusFile= commands.getoutput("mktemp %s/temp.status.XXXXX" % tempdir)
     print("echo reserved status file: %s" % statusFile)
     return statusFile
 
