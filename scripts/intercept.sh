@@ -13,14 +13,14 @@ AR=$LOCKROOT/scripts/myar.pl
 LOGFILE=$PWD/gcc-log.txt
 
 
-/bin/rm -f $LOGFILE
+rm -f $LOGFILE
 export CC
 export GCC
 export AR
 export LD
 export LOGFILE
 
-$*
+eval $*
 
 # make a file that my merge script understands too 
 sed "s/duppy/MYCC/" $LOGFILE > $PWD/stripped-log.txt
