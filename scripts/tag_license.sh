@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #---
 # Tags all source files in a directory w/ the LICENSE. Checks if it may

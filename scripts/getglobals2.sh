@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 LOG=$1
 NAME=$2
 STARTPATTERN="New global.*$NAME"

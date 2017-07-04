@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 # run a regression test containing one or more intentional failures
 #
 # To create a source file to be processed by this script do the following:

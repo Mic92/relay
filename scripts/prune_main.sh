@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Prune duppy calls that would have compiled files w/ other "main" functions
 

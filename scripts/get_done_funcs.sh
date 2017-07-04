@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 if [ $# -ne "1" ]; then
    echo 1>&2 "Searches log for completed funcs.
 	Usage: $0 logfile"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CILTREES=$1
 ANALYSIS="nullset"

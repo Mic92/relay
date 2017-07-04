@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ $# -le 2 ]; then
     echo 1>&2 Usage: $0 patterns outpath1 outpath2 test1 [test2, ...]

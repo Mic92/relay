@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Intercepts GCC calls from a makefile -- remember to change LOCKROOT
 # Example usage: "intercept.sh make -e"

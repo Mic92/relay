@@ -1,5 +1,5 @@
 
-#!/bin/bash
+#!/usr/bin/env bash
 
 #location of a RSA key for ssh v.2
 SSH_DIR="/home/jan/.ssh"

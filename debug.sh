@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CIL=cil
 INCLUDES="-I $CIL/src -I $CIL/src/ext -I $CIL/src/ext/pta -I $CIL/src/frontc -I $CIL/ocamlutil -I $CIL/obj/x86_LINUX -I datastructs -I pta -I cilexts -I fp_analysis -I fp_rci_analysis -I radar "

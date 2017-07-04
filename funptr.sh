@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 EXE=analyze_fp.exe
 #EXE=analyze_fp_byte
 date

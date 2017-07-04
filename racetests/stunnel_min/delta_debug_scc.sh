@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # delta-debug a file down while steens and andersens still gets SCCs > N
 # (anders may timeout... if that is the case we'll just assume it still

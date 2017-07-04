@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Runs locksmith on a merged file
 # remember to change path variables

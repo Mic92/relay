@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 LOG=$1
 FUNC=$2
 STARTPATTERN="SuggestContext for $FUNC"

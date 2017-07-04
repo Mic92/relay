@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #--- test different callgraphs w/ the null analysis as client
 

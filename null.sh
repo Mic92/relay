@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 date
 
 usage="Usage: $0 cg_file [status_file]"

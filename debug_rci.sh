@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 EXE=fp_rci_byte
 echo "incrementing generation number"
 scripts/next_num.py gen_num.txt

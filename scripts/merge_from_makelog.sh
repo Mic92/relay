@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Merge the source files according to info in "stripped-log.txt"
 

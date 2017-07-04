@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function checkFinish {
   if [ $? -ne "0" ]; then

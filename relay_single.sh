@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env /bash
 
 #--- run one instance of relay (along with the server)
 

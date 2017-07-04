@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 TO_SPLIT=`ls`
 INDICES="10 20 30 40 50 60 70 80 90"

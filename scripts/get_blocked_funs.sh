@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 SUMDIR=$1
 TEMP_DF=`tempfile`

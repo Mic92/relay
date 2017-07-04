@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # recover parts of relay's _fun_done_dir from directory listings 
 

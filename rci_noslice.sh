@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 EXE=fp_rci.exe
 #EXE=fp_rci_byte

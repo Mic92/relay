@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Dumps the call graph, and cil ASTs to the DUMPROOT specified below
 # Reads the information from "gcc-log"

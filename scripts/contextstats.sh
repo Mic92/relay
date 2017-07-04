@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 LOG=$1
 ./scripts/getfpdonefuncs.sh $LOG | awk '{
 if (NR == 1) {

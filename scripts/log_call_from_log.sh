@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Replay commands from "stripped-log.txt" but run through "cilly --dologcalls"
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ulimit -m 2300000
 #--- test one callgraph w/ null analysis

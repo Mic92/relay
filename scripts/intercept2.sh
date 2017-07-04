@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # "intercept" calls to GNU libtool
 # log its dry-run commands (which should reference gcc) 

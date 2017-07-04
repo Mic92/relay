@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # run a command, sending stdout to one file and stderr to another,
 # but also sending both to this process' stdout/stderr, respectively
 

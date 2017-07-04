@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ### think about overflow?
 grep "SEQ knowledge counter" $1 \

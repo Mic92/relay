@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 date
 echo "incrementing generation number"
 scripts/next_num.py gen_num.txt
