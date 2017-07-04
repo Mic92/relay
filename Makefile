@@ -452,7 +452,7 @@ fix_id_cg$(BYTE_EXT): $(ID_FIX_CG_BYTE)
 TEST_PTA_OBJS = $(addsuffix .cmx, $(TEST_PTA))
 
 test_pta$(OPT_EXT): $(TEST_PTA_OBJS)
-	$(OCAMLOPT) -ccopt -static -o $@ $(OCAMLOPTFLAGS) \
+	$(OCAMLOPT) -o $@ $(OCAMLOPTFLAGS) \
 	$(CIL_OBJS)/cil.cmxa $^
 
 
@@ -470,14 +470,14 @@ test_pta$(BYTE_EXT): $(TEST_PTA_BYTE)
 RACE_BYTE_OBJS = $(addsuffix .cmo, $(RACE))
 
 race$(BYTE_EXT): $(RACE_BYTE_OBJS)
-	$(OCAMLC) -ccopt -static -o $@ $(OCAMLFLAGS) \
+	$(OCAMLC) -o $@ $(OCAMLFLAGS) \
 	$(CIL_OBJS)/cil.cma $^
 
 # The list of object files for the native version
 RACE_NATIVE_OBJS = $(addsuffix .cmx, $(RACE))
 
 race_anal$(OPT_EXT): $(RACE_NATIVE_OBJS)
-	$(OCAMLOPT) -ccopt -static -o $@ $(OCAMLOPTFLAGS) \
+	$(OCAMLOPT) -o $@ $(OCAMLOPTFLAGS) \
 	$(CIL_OBJS)/cil.cmxa $^
 
 #------------------------------------------------------------
@@ -701,7 +701,7 @@ server$(BYTE_EXT): $(SERVER_SOCKET_BYTE_OBJS)
 SERVER_SOCKET_NATIVE_OBJS = $(addsuffix .cmx, $(SERVER_SOCKET))
 
 server$(OPT_EXT): $(SERVER_SOCKET_NATIVE_OBJS)
-	$(OCAMLOPT) -ccopt -static -o $@ $(OCAMLOPTFLAGS) \
+	$(OCAMLOPT) -o $@ $(OCAMLOPTFLAGS) \
 	$(CIL_OBJS)/cil.cmxa $^
 
 
