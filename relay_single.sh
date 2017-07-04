@@ -6,7 +6,7 @@ CILTREES=$1
 shift 
 
 function doAnalysis () {
-    CONFIG=client.cfg
+    CONFIG=client.cfg.steens
     LOG=$CILTREES/log.relay
 
     ./server.sh $CILTREES -cc $CONFIG > /dev/null 2>&1 &
