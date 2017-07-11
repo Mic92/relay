@@ -38,8 +38,8 @@ export NODEF
 
 duppy ()
 {
-    echo duppy $*
-    $DUPPYROOT/duppy $*
+    echo duppy "$@"
+    $DUPPYROOT/duppy "$@"
 }
 
 STARTTIME=$(date +%s)
