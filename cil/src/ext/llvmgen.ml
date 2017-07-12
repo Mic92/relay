@@ -247,7 +247,7 @@ let rec llvmTypeOf (v:llvmValue) : llvmType = match v with
 	  match unrollType t with
 	  | TArray (t, _, _) -> t
 	  | TComp (ci, _) ->
-	      let field = nth (!getCfields ci) (Int64.to_int i) in
+	      let field = nth ci.cfields (Int64.to_int i) in
 	      field.ftype
 	  | _ -> raise Bug
       end
@@ -814,6 +814,7 @@ class llvmGeneratorClass : llvmGenerator = object (self)
       | Return (None, _) -> gReturnVoid slabel
       | Return (Some e, _) -> gReturn slabel e
       | Goto (sref, _) -> gGoto slabel sref
+      | ComputedGoto _ -> raise (Unimplemented "ComputedGoto")
       | Break _ -> gBreak slabel 
       | Continue _ -> gContinue slabel 
       | If (e, b1, b2, _) -> gIf slabel e b1 b2
@@ -863,8 +864,9 @@ class llvmGeneratorClass : llvmGenerator = object (self)
 	let addCase (target:llvmBlock) (l:label) = match l with
 	| Label _ -> ()
 	| Case (e, _) -> cases := (intConstValue e, target) :: !cases
+	| CaseRange _ -> assert false
 	| Default _ -> defblock := target
-	in iter (fun s -> iter (addCase (getNamedBlock (labelOf s))) s.labels) slist;
+	in iter (fun s -> iter (addCase (getNamedBlock (labelOf s))) (caseRangeFold s.labels)) slist;
 	TSwitch (v, !defblock, !cases)
       in 
       gExp label e switchterm sbrk scont
@@ -996,6 +998,8 @@ class llvmGeneratorClass : llvmGenerator = object (self)
     | CastE (t, e) -> iCast t e
     | AddrOf lv -> iAddrOf lv
     | StartOf lv -> iStartOf lv
+    | AddrOfLabel _ -> raise (Unimplemented "AddrOfLabel")
+    | Question _ -> raise (Unimplemented "Question")
 
     and iUnop op (e:exp) (t:typ) : llvmInstruction list * llvmValue = 
       let (il,v) = iExp e in

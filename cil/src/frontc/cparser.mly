@@ -234,8 +234,7 @@ let transformOffsetOf (speclist, dtype) member =
   in
   let memberExpr = replaceBase member in
   let addrExpr = UNARY (ADDROF, memberExpr) in
-  (* slight cheat: hard-coded assumption that size_t == unsigned int *)
-  let sizeofType = [SpecType Tunsigned], JUSTBASE in
+  let sizeofType = [SpecType Tsizet], JUSTBASE in
   let resultExpr = CAST (sizeofType, SINGLE_INIT addrExpr) in
   resultExpr
 
@@ -887,8 +886,8 @@ statement:
 	                         {CASE (fst $2, $4, (*handleLoc*) $1)}
 |   CASE expression ELLIPSIS expression COLON statement
 	                         {CASERANGE (fst $2, fst $4, $6, (*handleLoc*) $1)}
-|   DEFAULT COLON
-	                         {DEFAULT (NOP $1, (*handleLoc*) $1)}
+|   DEFAULT COLON statement
+	                         {DEFAULT ($3, (*handleLoc*) $1)}
 |   RETURN SEMICOLON		 {RETURN (NOTHING, (*handleLoc*) $1)}
 |   RETURN comma_expression SEMICOLON
 	                         {RETURN (smooth_expression (fst $2), (*handleLoc*) $1)}

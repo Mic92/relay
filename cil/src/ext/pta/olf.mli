@@ -78,6 +78,3 @@ val absloc_epoints_to : tau -> absloc list
 val absloc_of_lvalue : lvalue -> absloc 
 val absloc_eq : (absloc * absloc) -> bool
 val d_absloc : unit -> absloc -> Pretty.doc
-
-(** Resets global state variables *)
-val reset_globals : unit -> unit

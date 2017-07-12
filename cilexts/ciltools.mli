@@ -61,8 +61,3 @@ module PPSet : Set.S with type elt = Cil.prog_point
 
 val getIndex : Cil.varinfo list -> Cil.varinfo -> int option
 val isFormal : Cil.fundec -> Cil.varinfo -> bool
-
-(************** Deprecated ***************)
-
-module InstrHash : Hashtbl.S with type key = Cil.instr
-

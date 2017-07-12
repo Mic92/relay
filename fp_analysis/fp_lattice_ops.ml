@@ -70,11 +70,11 @@ let rec combineVals v1 v2 =
            combineVals other (Records (promoteToRecord theNfp))
       )
         
-  | (Records _ as r), (_ as nonrec)
-  | (_ as nonrec), (Records _ as r)
-  | (FIRecs _ as r), (_ as nonrec)
-  | (_ as nonrec), (FIRecs _ as r) ->
-      combineVals r (Records (promoteToRecord nonrec))
+  | (Records _ as r), (_ as foo)
+  | (_ as foo), (Records _ as r)
+  | (FIRecs _ as r), (_ as foo)
+  | (_ as foo), (FIRecs _ as r) ->
+      combineVals r (Records (promoteToRecord foo))
 
 and combineRecordSets recs1 recs2 =
   match recs1, recs2 with

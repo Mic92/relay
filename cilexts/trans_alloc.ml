@@ -47,6 +47,7 @@ let rec findMalloc exp =
   | Lval _ -> None
   | CastE (t, e) -> findMalloc e
   | Const _ | SizeOf _ | SizeOfStr _ | SizeOfE _ 
+  | Question _ | AddrOfLabel _
   | AlignOf _ | AlignOfE _ | UnOp _ | BinOp _  -> None
 
 let unknownMallocType = 
@@ -72,6 +73,7 @@ let warnHasMultipleSizeOf exp =
   let rec loop cur exp =
     match exp with
       SizeOf _ | SizeOfE _ | SizeOfStr _ -> cur + 1
+    | Question (_, _, _, _) | AddrOfLabel _
     | Const _ | Lval _ | AddrOf _ | StartOf _ | AlignOf _ | AlignOfE _ -> cur
     | CastE (_, e) -> loop cur e
     | UnOp (_, e, _) -> loop cur e
@@ -110,6 +112,7 @@ and findSizeOf exp =
   | UnOp (op, e1, _) ->
       findSizeOf e1
   | AlignOf _ | AlignOfE _ | Const _
+  | Question (_, _, _, _) | AddrOfLabel _
   | Lval _ | AddrOf _ | StartOf _ -> raise Not_found
 
 

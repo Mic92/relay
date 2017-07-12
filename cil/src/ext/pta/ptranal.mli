@@ -33,9 +33,6 @@
  *
  *)
 
-(** Reset global state vars *) 
-val reset_globals : unit -> unit
-
 (***********************************************************************)
 (*                                                                     *)
 (* Flags                                                               *)
@@ -73,6 +70,10 @@ val show_progress : bool ref
 
 (** Treat undefined functions conservatively *)
 val conservative_undefineds : bool ref
+
+(** client can specify particular external functions that
+ *  have no side effects *)
+val callHasNoSideEffects : (Cil.exp -> bool) ref
 
 (***********************************************************************)
 (*                                                                     *)

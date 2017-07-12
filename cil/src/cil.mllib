@@ -1,4 +1,5 @@
 Alpha
+Alloc
 Availexps
 Availexpslv
 Bitmap
@@ -8,9 +9,12 @@ Cabshelper
 Cabsvisit
 Callgraph
 Canonicalize
+Canon_lval
 Cfg
 Check
 Cil
+Cildump
+Cilint
 Cillower
 Ciloptions
 Ciltools
@@ -29,6 +33,7 @@ Errormsg
 Escape
 Expcompare
 Feature_config
+Filetools
 Formatcil
 Formatlex
 Formatparse
@@ -49,6 +54,7 @@ Longarray
 Machdep
 Machdepenv
 Mergecil
+Mycallgraph
 Olf
 Oneret
 Partial
@@ -64,8 +70,8 @@ Simplemem
 Simplify
 Ssa
 Stats
-Testcil
 Trace
+Trans_alloc
 Uref
 Usedef
 Util

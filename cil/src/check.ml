@@ -285,19 +285,17 @@ and checkArithmeticType (t: typ) =
   if not (isArithmeticType t) then
     ignore (warn "Non-arithmetic type")
 
-(* Check that a type is a promoted boolean type *)
-and checkBooleanType (t: typ) = 
-  checkType t CTExp;
-  match unrollType t with
-    TInt _ | TEnum _ | TFloat _ | TPtr _ -> ()
-  | _ -> ignore (warn "Non-boolean type")
-
-
 (* Check that a type is a pointer type *)
 and checkPointerType (t: typ) = 
   checkType t CTExp;
   if not (isPointerType t) then
     ignore (warn "Non-pointer type")
+
+(* Check that a type is a scalar type *)
+and checkScalarType (t: typ) = 
+  checkType t CTExp;
+  if not (isScalarType t) then
+    ignore (warn "Non-scalar type")
 
 
 and typeMatch (t1: typ) (t2: typ) = 
@@ -364,7 +362,7 @@ and checkCompInfo (isadef: defuse) comp =
         | _ -> ());
         checkAttributes f.fattr
       in
-      List.iter checkField (!getCfields comp)
+      List.iter checkField comp.cfields
     end
   end
 
@@ -448,7 +446,7 @@ and checkOffset basetyp : offset -> typ = function
       (* Now check that the host is shared propertly *)
       checkCompInfo Used fi.fcomp;
       (* Check that this exact field is part of the host *)
-      if not (List.exists (fun f -> f == fi) (!getCfields fi.fcomp)) then
+      if not (List.exists (fun f -> f == fi) fi.fcomp.cfields) then
         ignore (warn "Field %s not part of %s" 
                   fi.fname (compFullName fi.fcomp));
       checkOffset fi.ftype o
@@ -509,7 +507,7 @@ and checkExp (isconst: bool) (e: exp) : typ =
 
       | UnOp (LNot, e, tres) -> 
           let te = checkExp isconst e in
-          checkBooleanType te;
+          checkScalarType te;
           checkIntegralType tres; (* Must check that t is well-formed *)
           typeMatch tres intType;
           tres
@@ -528,8 +526,8 @@ and checkExp (isconst: bool) (e: exp) : typ =
               typeMatch t1 t2; checkIntegralType tres;
               typeMatch t1 tres; tres
           | LAnd | LOr -> 
-              typeMatch t1 t2; checkBooleanType tres;
-              typeMatch t1 tres; tres
+              checkScalarType t1; checkScalarType t2;
+              typeMatch tres intType; tres
           | Shiftlt | Shiftrt -> 
               typeMatch t1 tres; checkIntegralType t1; 
               checkIntegralType t2; tres
@@ -544,9 +542,20 @@ and checkExp (isconst: bool) (e: exp) : typ =
           | MinusPP  -> 
               checkPointerType t1; checkPointerType t2;
               typeMatch t1 t2;
-              typeMatch tres intType;
+              typeMatch tres !ptrdiffType;
               tres
       end
+
+      | Question (e1, e2, e3, tres) -> begin
+          let t1 = checkExp isconst e1 in
+          let t2 = checkExp isconst e2 in
+          let t3 = checkExp isconst e3 in
+          checkScalarType t1;
+          typeMatch t2 t3;
+          typeMatch t2 tres;
+          tres
+      end
+
       | AddrOf (lv) -> begin
           let tlv = checkLval isconst true lv in
           (* Only certain types can be in AddrOf *)
@@ -561,6 +570,20 @@ and checkExp (isconst: bool) (e: exp) : typ =
           | _ -> E.s (bug "AddrOf on unknown type")
       end
 
+      | AddrOfLabel (gref) -> begin
+          (* Find a label *)
+          let lab =
+            match List.filter (function Label _ -> true | _ -> false)
+                  !gref.labels with
+              Label (lab, _, _) :: _ -> lab
+            | _ ->
+                ignore (warn "Address of label to block without a label");
+                "<missing label>"
+          in
+          (* Remember it as a target *)
+          gotoTargets := (lab, !gref) :: !gotoTargets;
+          voidPtrType
+      end
       | StartOf lv -> begin
           let tlv = checkLval isconst true lv in
           match unrollType tlv with
@@ -600,14 +623,16 @@ and checkInit  (i: init) : typ =
       | CompoundInit (ct, initl) -> begin
           checkType ct CTSizeof;
           (match unrollType ct with
-            TArray(bt, Some elen, _) -> 
-              ignore (checkExp true elen);
+            TArray(bt, elen, _) -> 
               let len =
-                match isInteger (constFold true elen) with
+                match elen with
+                | None -> 0L
+                | Some e -> (ignore (checkExp true e);
+                match isInteger (constFold true e) with
                   Some len -> len
                 | None -> 
                     ignore (warn "Array length is not a constant");
-                    0L
+                    0L)
               in
               let rec loopIndex i = function
                   [] -> 
@@ -624,8 +649,6 @@ and checkInit  (i: init) : typ =
                     ignore (warn "Malformed initializer for array element")
               in
               loopIndex Int64.zero initl
-          | TArray(_, None, _) -> 
-              ignore (warn "Malformed initializer for array")
           | TComp (comp, _) -> 
               if comp.cstruct then
                 let rec loopFields 
@@ -647,11 +670,11 @@ and checkInit  (i: init) : typ =
                 in
                 loopFields
                   (List.filter (fun f -> f.fname <> missingFieldName) 
-                     (!getCfields comp)) 
+                     comp.cfields) 
                   initl
 
               else (* UNION *)
-                if (!getCfields comp) == [] then begin
+                if comp.cfields == [] then begin
                   if initl != [] then 
                     ignore (warn "Initializer for empty union not empty");
                 end else begin
@@ -659,7 +682,7 @@ and checkInit  (i: init) : typ =
                     [(Field(f, NoOffset), ei)] -> 
                       if f.fcomp != comp then 
                         ignore (bug "Wrong designator for union initializer");
-                      if !msvcMode && f != List.hd (!getCfields comp) then
+                      if !msvcMode && f != List.hd comp.cfields then
                         ignore (warn "On MSVC you can only initialize the first field of a union");
                       checkInitType ei f.ftype
                       
@@ -692,7 +715,16 @@ and checkStmt (s: stmt) =
               ignore (warn "Multiply defined label %s" ln);
             H.add labels ln ()
         | Case (e, _) -> 
-            checkExpType true e intType
+           let t = checkExp true e in
+           if not (isIntegralType t) then
+               E.s (bug "Type of case expression is not integer");
+        | CaseRange (e1, e2, _) ->
+           let t1 = checkExp true e1 in
+           if not (isIntegralType t1) then
+               E.s (bug "Type of case expression is not integer");
+           let t2 = checkExp true e2 in
+           if not (isIntegralType t2) then
+               E.s (bug "Type of case expression is not integer");
         | _ -> () (* Not yet implemented *)
       in
       List.iter checkLabel s.labels;
@@ -716,8 +748,10 @@ and checkStmt (s: stmt) =
           in
           (* Remember it as a target *)
           gotoTargets := (lab, !gref) :: !gotoTargets
-            
-
+      | ComputedGoto (e, l) ->
+          currentLoc := l;
+          let te = checkExp false e in
+          typeMatch te voidPtrType
       | Return (re,l) -> begin
           currentLoc := l;
           match re, !currentReturnType with
@@ -731,12 +765,14 @@ and checkStmt (s: stmt) =
       | If (e, bt, bf, l) -> 
           currentLoc := l;
           let te = checkExp false e in
-          checkBooleanType te;
+          checkScalarType te;
           checkBlock bt;
           checkBlock bf
       | Switch (e, b, cases, l) -> 
           currentLoc := l;
-          checkExpType false e intType;
+          let t = checkExp false e in
+          if not (isIntegralType t) then
+              E.s (bug "Type of switch expression is not integer");
           (* Remember the statements so far *)
           let prevStatements = !statements in
           checkBlock b;
@@ -805,6 +841,8 @@ and checkInstr (i: instr) =
           (* Now check the return value*)
       (match dest, unrollType rt with
         None, TVoid _ -> ()
+      (* Avoid spurious warnings for atomic builtins *)
+      | Some _, TVoid [Attr ("overloaded", [])] -> ()
       | Some _, TVoid _ -> ignore (warn "void value is assigned")
       | None, _ -> () (* "Call of function is not assigned" *)
       | Some destlv, rt' -> 
@@ -896,6 +934,8 @@ let rec checkGlobal = function
         (fun _ -> 
           checkGlobal (GVarDecl (vi, l));
           (* Check the initializer *)
+          if vi.vinit != init then
+              E.s (bug "GVar initializer doesn't match vinit (%s)" vi.vname);
           begin match init.init with
             None -> ()
           | Some i -> ignore (checkInitType i vi.vtype)
@@ -955,7 +995,7 @@ let rec checkGlobal = function
               if v.vglob then
                 ignore (warnContext
                           "Local %s has the vglob flag set" v.vname);
-              if v.vstorage <> NoStorage && v.vstorage <> Register then
+              if v.vstorage <> NoStorage && v.vstorage <> Register && v.vstorage <> Static then
                 ignore (warnContext
                           "Local %s has storage %a\n" v.vname
                           d_storage v.vstorage);

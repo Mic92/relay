@@ -448,30 +448,21 @@ let rec combineTypes (what: combineWhat)
         if oldk == k then oldk else
         (* GCC allows a function definition to have a more precise integer 
          * type than a prototype that says "int" *)
-          let sizeOfT = bitsSizeOf t in
-          if not !msvcMode && oldk = IInt && sizeOfT <= 32 
-            && (what = CombineFunarg || what = CombineFunret) 
-          then 
-            k
-          else (
-            let msg =
-              P.sprint ~width:80
-                (P.dprintf
-                   "(different integer types %a and %a)"
-                   d_type oldt d_type t) in
-            raise (Failure msg)
-            (* Jan temporarily allow ... or not...
-            E.warn "Ignoring merge violation %s\n" msg;
-            let sizeOfOldT = bitsSizeOf oldt in
-            if sizeOfOldT >= sizeOfT then
-              oldik
-            else 
-              ik
-            *)
-          ) 
+        if not !msvcMode && oldk = IInt && bitsSizeOf t <= 32 
+           && (what = CombineFunarg || what = CombineFunret) 
+        then 
+          k
+        else (
+          let msg =
+            P.sprint ~width:80
+              (P.dprintf
+                 "(different integer types %a and %a)"
+                 d_type oldt d_type t) in
+          raise (Failure msg)
+        )
       in
       TInt (combineIK oldik ik, addAttributes olda a)
-        
+
   | TFloat (oldfk, olda), TFloat (fk, a) -> 
       let combineFK oldk k = 
         if oldk == k then oldk else
@@ -616,8 +607,8 @@ and matchCompInfo (oldfidx: int) (oldci: compinfo)
     let ci = cinode.ndata in
     let fidx = cinode.nfidx in
     
-    let old_len = List.length (!getCfields oldci) in
-    let len = List.length (!getCfields ci) in
+    let old_len = List.length oldci.cfields in
+    let len = List.length ci.cfields in
     (* It is easy to catch here the case when the new structure is undefined 
      * and the old one was defined. We just reuse the old *)
     (* More complicated is the case when the old one is not defined but the 
@@ -660,7 +651,7 @@ and matchCompInfo (oldfidx: int) (oldci: compinfo)
             (* Change the type in the representative *)
             oldf.ftype <- newtype;
           ) 
-          (!getCfields oldci) (!getCfields ci)
+          oldci.cfields ci.cfields
       with Failure reason -> begin
         (* Our assumption was wrong. Forget the isomorphism *)
         undo ();
@@ -679,7 +670,7 @@ and matchCompInfo (oldfidx: int) (oldci: compinfo)
        * empty, copy over the fields from the new one. Won't this result in 
        * all sorts of undefined types??? *)
       if old_len = 0 then 
-        !setCfields oldci (!getCfields ci);
+        oldci.cfields <- ci.cfields;
     end;
     (* We get here when we succeeded checking that they are equal, or one of 
      * them was empty *)
@@ -866,7 +857,7 @@ let rec oneFilePass1 (f:file) : unit =
           (* Save the names of the formal arguments *)
           let _, args, _, _ = splitFunctionTypeVI fdec.svar in
           H.add formalNames (!currentFidx, fdec.svar.vname) 
-            (List.map (fun (fn, _, _) -> fn) (argsToList args));
+            (Util.list_map (fun (fn, _, _) -> fn) (argsToList args));
           fdec.svar.vreferenced <- false;
           (* Force inline functions to be static. *) 
           (* GN: This turns out to be wrong. inline functions are external, 
@@ -1073,12 +1064,12 @@ class renameVisitorClass = object (self)
                 | f' :: rest when f' == f -> i
                 | _ :: rest -> indexOf (i + 1) rest
               in
-              let index = indexOf 0 (!getCfields f.fcomp) in
-              if List.length (!getCfields ci') <= index then 
+              let index = indexOf 0 f.fcomp.cfields in
+              if List.length ci'.cfields <= index then 
                 E.s (bug "Too few fields in replacement %s(%d) for %s(%d)\n"
                        (compFullName ci') oldfidx
                        (compFullName f.fcomp) !currentFidx);
-              let f' = List.nth (!getCfields ci') index in 
+              let f' = List.nth ci'.cfields index in 
               ChangeDoChildrenPost (Field (f', o), fun x -> x)
           end
         end
@@ -1155,6 +1146,7 @@ begin
     | Instr(l) -> 13 + 67*(List.length l)
     | Return(_) -> 17
     | Goto(_) -> 19
+    | ComputedGoto(_) -> 131
     | Break(_) -> 23
     | Continue(_) -> 29
     | If(_,b1,b2,_) -> 31 + 37*(stmtListSum b1.bstmts) 
@@ -1166,7 +1158,7 @@ begin
     | TryExcept (b, (il, e), h, _) -> 
         67 + 83*(stmtListSum b.bstmts) + 97*(stmtListSum h.bstmts)
     | TryFinally (b, h, _) -> 
-        103 + 113*(stmtListSum b.bstmts) + 119*(stmtListSum h.bstmts)
+        103 + 113*(stmtListSum b.bstmts) + 127*(stmtListSum h.bstmts)
   in
   
   (* disabled 2nd and 3rd measure because they appear to get different
@@ -1610,7 +1602,7 @@ let oneFilePass2 (f: file) =
                 (* And we must rename the items to using the same name space 
                  * as the variables *)
                 ei.eitems <- 
-                   List.map
+                   Util.list_map
                      (fun (n, i, loc) -> 
                        let newname, _ = 
                          A.newAlphaName vtAlpha None n !currentLoc in

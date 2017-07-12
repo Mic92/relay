@@ -4,8 +4,9 @@
 # Important sub directories 
 
 CIL := cil
-CIL_OBJS := $(CIL)/obj/x86_LINUX
-CIL_INCLUDE := -I $(CIL_OBJS)
+#CIL_OBJS := $(CIL)/obj/x86_LINUX
+CIL_OBJS := $(CIL)/_build/ocamlutil/ 
+CIL_INCLUDE := -I $(CIL_OBJS) -I $(CIL)/_build/src -I $(CIL)/_build/src/ext
 DS_DIR := datastructs
 PTA_DIR := pta
 FP_DIR := fp_analysis

@@ -32,20 +32,18 @@
 
 (** Utilities for maintaining timing statistics *)
 
-(** Resets all the timings. Invoke with "true" if you want to switch to using 
- * the hardware performance counters from now on. You get an exception if 
- * there are not performance counters available *)
-val reset: bool -> unit
-exception NoPerfCount
+type timerModeEnum =
+  | Disabled      (** Do not collect timing information *)
+  | SoftwareTimer (** Use OCaml's [Unix.time] for timing information *)
 
-(** Check if we have performance counters *)
-val has_performance_counters: unit -> bool
-                           
-(** Sample the current cycle count, in megacycles. *)
-val sample_pentium_perfcount_20: unit -> int
+(** Resets all the timings and specifies the method to use for future timings.
+ *  Call this before doing any timing. *)
+val reset: timerModeEnum -> unit
 
-(** Sample the current cycle count, in kilocycles. *)
-val sample_pentium_perfcount_10: unit -> int
+(** Flag to indicate whether or not to count the number of calls of
+    to {!Stats.repeattime} or {!Stats.time} for each label.
+    (default: false) *)
+val countCalls: bool ref
 
 (** Time a function and associate the time with the given string. If some
     timing information is already associated with that string, then accumulate
@@ -61,11 +59,14 @@ val repeattime : float -> string -> ('a -> 'b) -> 'a -> 'b
 (** Print the current stats preceeded by a message *)
 val print : out_channel -> string -> unit
 
+(** Return the cumulative time of all calls to {!Stats.time} and
+  {!Stats.repeattime} with the given label. *)
+val lookupTime: string -> float
 
 
 (** Time a function and set lastTime to the time it took *)
-val lastTime: float ref
 val timethis: ('a -> 'b) -> 'a -> 'b
+val lastTime: float ref
 
 
 

@@ -47,10 +47,6 @@ type outfile =
     { fname: string;
       fchan: out_channel } 
 
-let setTraceDepth n =
-  Pretty.printDepth := n
-
-
       (* Processign of output file arguments *)
 let openFile (what: string) (takeit: outfile -> unit) (fl: string) = 
   if !E.verboseFlag then
@@ -223,10 +219,6 @@ let options : (string * Arg.spec * string) list =
 	 ignore (E.error "CIL_MACHINE machine model is invalid: %s" msg)),
    " Use machine model specified in CIL_MACHINE environment variable";
 
-    "--testcil",
-    Arg.String (fun s -> Cilutil.testcil := s),
-    "<compiler> Test CIL using the given compiler";
-
     "--ignore-merge-conflicts",
     Arg.Set Mergecil.ignore_merge_conflicts,
     (" Ignore merging conflicts" ^
@@ -295,6 +287,47 @@ let options : (string * Arg.spec * string) list =
     Arg.Clear Cabs2cil.allowDuplication,
     (" Prevent small chunks of code from being duplicated" ^
        is_default (not !Cabs2cil.allowDuplication));
+
+    "--makeStaticGlobal",
+    Arg.Set Cil.makeStaticGlobal,
+    (" Convert local static variables into global variables" ^
+       is_default !Cil.makeStaticGlobal);
+
+    "--noMakeStaticGlobal",
+    Arg.Clear Cil.makeStaticGlobal,
+     (" Use initializers for local static variables" ^
+       is_default (not !Cil.makeStaticGlobal));
+
+    "--useLogicalOperators",
+    Arg.Set Cil.useLogicalOperators,
+    (" Where possible (that is, if there are no side-effects),\n\t\t\t\t" ^
+       "retain &&, || and ?: (instead of transforming them to If statements)" ^
+       is_default !Cil.useLogicalOperators);
+
+    "--noUseLogicalOperators",
+    Arg.Clear Cil.useLogicalOperators,
+     ("Transform &&, || and ?: to If statements" ^
+       is_default (not !Cil.useLogicalOperators));
+
+    "--useComputedGoto",
+    Arg.Set Cil.useComputedGoto,
+    (" Retain GCC's computed goto" ^
+       is_default !Cil.useComputedGoto);
+
+    "--noUseComputedGoto",
+    Arg.Clear Cil.useComputedGoto,
+     (" Transform computed goto to Switch statements" ^
+       is_default (not !Cil.useComputedGoto));
+
+    "--useCaseRange",
+    Arg.Set Cil.useCaseRange,
+    (" Retain ranges of values in case labels" ^
+       is_default !Cil.useCaseRange);
+
+    "--noUseCaseRange",
+    Arg.Clear Cil.useCaseRange,
+     (" Transform case ranges to sequence of cases" ^
+       is_default (not !Cil.useCaseRange));
 
     "--keepunused",
     Arg.Set Rmtmps.keepUnused,

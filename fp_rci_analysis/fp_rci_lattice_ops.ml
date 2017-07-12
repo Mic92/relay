@@ -286,13 +286,13 @@ let rec combineVals base v1 v2 =
            combineVals base other (Records (promoteToRecord theNfp))
       )
 
-  | (Records _ as r), (_ as nonrec)
-  | (_ as nonrec), (Records _ as r)
-  | (FIRecs _ as r), (_ as nonrec)
-  | (_ as nonrec), (FIRecs _ as r)
-  | (NCRecord _ as r), (_ as nonrec)
-  | (_ as nonrec), (NCRecord _ as r) ->
-      combineVals base r (Records (promoteToRecord nonrec))
+  | (Records _ as r), (_ as foo)
+  | (_ as foo), (Records _ as r)
+  | (FIRecs _ as r), (_ as foo)
+  | (_ as foo), (FIRecs _ as r)
+  | (NCRecord _ as r), (_ as foo)
+  | (_ as foo), (NCRecord _ as r) ->
+      combineVals base r (Records (promoteToRecord foo))
 
 and combineRecordPart base part1 part2 = 
   (* TODO: make default from base!!! *)

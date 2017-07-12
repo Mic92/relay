@@ -81,6 +81,3 @@ val absloc_of_lvalue : lvalue -> absloc
 val absloc_eq : (absloc * absloc) -> bool
 val d_absloc : unit -> absloc -> Pretty.doc
 val phonyAddrOf : lvalue -> lvalue
-
-(** Resets global state variables *)
-val reset_globals : unit -> unit
